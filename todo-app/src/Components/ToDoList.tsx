@@ -17,7 +17,7 @@ const ToDoList = () => {
     }
   }, [response, error]);
 
-  const handleInput = (event: any) => {
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setToDo(event.target.value);
   };
 
@@ -27,20 +27,20 @@ const ToDoList = () => {
         text: todo,
         isCompleted: false,
       };
-      setToDoList([...todolist, curr]);
+      todolist.push(curr);
       setToDo("");
     } else {
       alert("enter the todo you want to add !");
     }
   };
 
-  const deleteToDo = (index: any) => {
+  const deleteToDo = (index: number) => {
     const updatedTodos = [...todolist];
     updatedTodos.splice(index, 1);
     setToDoList(updatedTodos);
   };
 
-  const handleCheck = (index: any) => {
+  const handleCheck = (index: number) => {
     const currentTodo = todolist[index];
     currentTodo.isCompleted = !currentTodo.isCompleted;
     setToDoList([...todolist]);
