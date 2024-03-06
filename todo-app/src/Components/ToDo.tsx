@@ -4,23 +4,21 @@ const ToDo = ({
   handleCheck,
   deleteToDo,
   item,
-  index,
 }: {
   handleCheck: (index: number) => void;
   deleteToDo: (index: number) => void;
   item: IToDo;
-  index: number;
 }) => {
   return (
     <>
       <li>
         <input
           type="checkbox"
-          onChange={() => handleCheck(index)}
+          onChange={() => handleCheck(item.id)}
           defaultChecked={item.isCompleted}
         />
         {item.text}
-        <button onClick={() => deleteToDo(index)}>delete</button>
+        <button onClick={() => deleteToDo(item.id)}>delete</button>
       </li>
     </>
   );

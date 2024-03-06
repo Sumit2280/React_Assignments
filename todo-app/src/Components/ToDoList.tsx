@@ -6,6 +6,7 @@ import useFetch from "../hooks/useFetch";
 const ToDoList = () => {
   const [todo, setToDo] = useState("");
   const [todolist, setToDoList] = useState<IToDo[]>([]);
+  const [id, setId] = useState(2);
   const url = "http://localhost:8000/todo";
   const { response, error, loader } = useFetch(url);
 
@@ -24,26 +25,29 @@ const ToDoList = () => {
   const saveInput = () => {
     if (todo) {
       const curr = {
+        id: id,
         text: todo,
         isCompleted: false,
       };
-      setToDoList([...todolist, curr]);
+      todolist.push(curr);
       setToDo("");
+      setId(id + 1);
     } else {
       alert("enter the todo you want to add !");
     }
   };
 
-  const deleteToDo = (index: any) => {
-    const updatedTodos = [...todolist];
-    updatedTodos.splice(index, 1);
-    setToDoList(updatedTodos);
+  const deleteToDo = (key: number) => {
+    const newList = todolist.filter((item) => item.id !== key);
+    setToDoList(newList);
   };
 
-  const handleCheck = (index: any) => {
-    const currentTodo = todolist[index];
-    currentTodo.isCompleted = !currentTodo.isCompleted;
-    setToDoList([...todolist]);
+  const handleCheck = (key: number) => {
+    const currentTodo = todolist.find((item) => item.id === key);
+    if (currentTodo) {
+      currentTodo.isCompleted = !currentTodo.isCompleted;
+      setToDoList([...todolist]);
+    }
   };
 
   return (
@@ -59,15 +63,14 @@ const ToDoList = () => {
           <div>
             <div>
               <h1>Not Completed Todo</h1>
-              {todolist.map((item, index) => {
+              {todolist.map((item) => {
                 if (!item.isCompleted) {
                   return (
-                    <ul>
+                    <ul key={item.id}>
                       <ToDo
                         handleCheck={handleCheck}
                         deleteToDo={deleteToDo}
                         item={item}
-                        index={index}
                       />
                     </ul>
                   );
@@ -76,15 +79,14 @@ const ToDoList = () => {
             </div>
             <div>
               <h1>Completed Todo</h1>
-              {todolist.map((item, index) => {
+              {todolist.map((item) => {
                 if (item.isCompleted) {
                   return (
-                    <ul>
+                    <ul key={item.id}>
                       <ToDo
                         handleCheck={handleCheck}
                         deleteToDo={deleteToDo}
                         item={item}
-                        index={index}
                       />
                     </ul>
                   );
