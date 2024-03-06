@@ -8,22 +8,17 @@ interface IProps {
 }
 
 const ToDo = (props: IProps) => {
-  const { handleCheck } = props;
-  const { deleteToDo } = props;
-  const { item } = props;
-  const { index } = props;
+  const { handleCheck, deleteToDo, item, index } = props;
   return (
-    <>
-      <li>
-        <input
-          type="checkbox"
-          onChange={() => handleCheck(index)}
-          defaultChecked={item.isCompleted}
-        />
-        {item.text}
-        <button onClick={() => deleteToDo(index)}>delete</button>
-      </li>
-    </>
+    <li>
+      <input
+        type="checkbox"
+        onChange={() => handleCheck(index)}
+        defaultChecked={item.isCompleted}
+      />
+      {item.text}
+      <button onClick={() => deleteToDo(index)}>delete</button>
+    </li>
   );
 };
 
