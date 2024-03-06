@@ -1,6 +1,6 @@
 interface IToDo {
-  text: string,
-  isCompleted: boolean
+  text: string;
+  isCompleted: boolean;
 }
 
-export default IToDo
+export default IToDo;
