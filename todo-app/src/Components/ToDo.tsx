@@ -3,7 +3,7 @@ import IToDo from "../interfaces/Todo";
 interface IProps {
   handleCheck: (key: number) => void;
   deleteToDo: (key: number) => void;
-  item:IToDo;
+  item: IToDo;
 }
 
 const ToDo = (props: IProps) => {
