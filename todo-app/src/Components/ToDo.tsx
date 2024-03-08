@@ -1,26 +1,23 @@
 import IToDo from "../interfaces/Todo";
 
-const ToDo = ({
-  handleCheck,
-  deleteToDo,
-  item,
-}: {
-  handleCheck: (index: number) => void;
-  deleteToDo: (index: number) => void;
-  item: IToDo;
-}) => {
+interface IProps {
+  handleCheck: (key: number) => void;
+  deleteToDo: (key: number) => void;
+  item:IToDo;
+}
+
+const ToDo = (props: IProps) => {
+  const { handleCheck, deleteToDo, item } = props;
   return (
-    <>
-      <li>
-        <input
-          type="checkbox"
-          onChange={() => handleCheck(item.id)}
-          defaultChecked={item.isCompleted}
-        />
-        {item.text}
-        <button onClick={() => deleteToDo(item.id)}>delete</button>
-      </li>
-    </>
+    <li>
+      <input
+        type="checkbox"
+        onChange={() => handleCheck(item.id)}
+        defaultChecked={item.isCompleted}
+      />
+      {item.text}
+      <button onClick={() => deleteToDo(item.id)}>delete</button>
+    </li>
   );
 };
 

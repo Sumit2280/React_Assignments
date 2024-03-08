@@ -6,6 +6,7 @@ const useFetch = (url: string) => {
   const [response, setResponse] = useState<IToDo[]>([]);
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(true);
+  const [shouldRefetch, refetch]= useState({})
 
   const fetchData = async () => {
     await axios
@@ -19,9 +20,10 @@ const useFetch = (url: string) => {
 
   useEffect(() => {
     fetchData();
-  }, [url]);
+  }, [url,shouldRefetch]);
 
-  return { response: response, error: error, loader: loader };
+  return { response: response, error: error, loader: loader, refetch:refetch };
 };
 
 export default useFetch;
+
