@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";;
 import ToDo from "./ToDo";
 import IToDo from "../interfaces/Todo";
 import useFetch from "../hooks/useFetch";
@@ -99,3 +99,5 @@ const ToDoList = () => {
 };
 
 export default ToDoList;
+
+
