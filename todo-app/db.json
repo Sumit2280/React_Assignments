@@ -1,14 +1,24 @@
 {
-  "todo":[
+  "todo": [
     {
-      "id":0,
-      "text":"task1",
-      "isCompleted":false
+      "id": "c36c",
+      "text": "task1",
+      "isCompleted": false
     },
     {
-      "id":1,
-      "text":"task2",
-      "isCompleted":false
+      "id": "b8d6",
+      "text": "task2",
+      "isCompleted": false
+    },
+    {
+      "id": "b726",
+      "text": "g",
+      "isCompleted": true
+    },
+    {
+      "id": "acbf",
+      "text": "s",
+      "isCompleted": true
     }
   ]
 }
