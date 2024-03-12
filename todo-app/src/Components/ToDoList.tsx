@@ -1,16 +1,46 @@
 import ToDo from "./ToDo";
 import useFetch from "../hooks/useFetch";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Col, Container, Form, Row } from "react-bootstrap";
+import { ChangeEvent, useMemo, useState } from "react";
+import { deleteRequest, updateRequest } from "../services/axiosWrapper";
+import IToDo from "../interfaces/Todo";
 
 const ToDoList = () => {
-  const url = "http://localhost:8000/todo";
-  const { response, error, loader, refetch } = useFetch(url);
-  const navigate = useNavigate();
+  const { response, error, loader, refetch } = useFetch();
+  const [searchKey, setSearchKey] = useState("");
+  const [visibletodos, setVisibletodos] = useState<IToDo[]>([]);
+  const [sortKey, setSortKey] = useState("");
+
+  const searchHandle = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchKey(event.target.value);
+  };
+
+  const sortHandle = (event: ChangeEvent<HTMLSelectElement>) => {
+    setSortKey(event.target.value);
+  };
+
+  useMemo(() => {
+    setVisibletodos(response.filter((item) => item.text.includes(searchKey)));
+  }, [response, searchKey]);
+
+  useMemo(() => {
+    if (sortKey !== "none") {
+      setVisibletodos(
+        response.sort((a, b) => {
+          if (sortKey === "text") {
+            return a.text > b.text ? 1 : -1;
+          } else {
+            return a.dueDate > b.dueDate ? 1 : -1;
+          }
+        })
+      );
+    } else {
+      refetch({});
+    }
+  }, [response, sortKey, refetch]);
 
   const deleteToDo = async (key: number) => {
-    await axios
-      .delete(`${url}/${key}`)
+    deleteRequest(key)
       .then((data) => console.log(data.data))
       .catch((err) => console.log(err));
     refetch({});
@@ -20,9 +50,7 @@ const ToDoList = () => {
     const currentTodo = response.find((item) => item.id === key);
     if (currentTodo) {
       currentTodo.isCompleted = !currentTodo?.isCompleted;
-      const currid = currentTodo.id;
-      axios
-        .put(`${url}/${currid}`, currentTodo)
+      updateRequest(key, currentTodo)
         .then(() => refetch({}))
         .catch((err) => alert(err));
       console.log(currentTodo);
@@ -31,60 +59,71 @@ const ToDoList = () => {
     }
   };
 
+  if (error) {
+    return <h1>Error....</h1>;
+  }
+  if (loader) {
+    return <h1>Loading....</h1>;
+  }
   return (
-    <>
-      <div>
-        <button onClick={() => navigate("/create")}>Add</button>
+    <div>
+      <Container>
+        <Row>
+          <Col sm={4}>
+            <Form className="mt-4 d-flex">
+              <Form.Control
+                type="search"
+                placeholder="Search"
+                className="me-2 rounded-pill w-auto"
+                aria-label="Search"
+                onChange={searchHandle}
+              />
+            </Form>
+          </Col>
+        </Row>
+      </Container>
+      <select onChange={sortHandle}>
+        <option value="none">none</option>
+        <option value="text">Text</option>
+        <option value="date">Date</option>
+      </select>
+      <div className="d-flex justify-content-center align-items-center">
+        <div>
+          <h1 className="text-danger">Not Completed Todo</h1>
+          <h5>Task Due Date</h5>
+          {visibletodos.map((item) => {
+            if (!item.isCompleted) {
+              return (
+                <ul key={item.id}>
+                  <ToDo
+                    handleCheck={handleCheck}
+                    deleteToDo={deleteToDo}
+                    item={item}
+                  />
+                </ul>
+              );
+            }
+          })}
+        </div>
+        <div>
+          <h1>Completed Todo</h1>
+          <h5>Task Due Date</h5>
+          {visibletodos.map((item) => {
+            if (item.isCompleted) {
+              return (
+                <ul key={item.id}>
+                  <ToDo
+                    handleCheck={handleCheck}
+                    deleteToDo={deleteToDo}
+                    item={item}
+                  />
+                </ul>
+              );
+            }
+          })}
+        </div>
       </div>
-      <div>
-        {!error ? (
-          <div>
-            {loader ? (
-              <h3>loading....</h3>
-            ) : (
-              <div>
-                <div>
-                  <h1>Not Completed Todo</h1>
-                  {response.map((item) => {
-                    if (!item.isCompleted) {
-                      return (
-                        <ul key={item.id}>
-                          <ToDo
-                            handleCheck={handleCheck}
-                            deleteToDo={deleteToDo}
-                            item={item}
-                          />
-                        </ul>
-                      );
-                    }
-                  })}
-                </div>
-                <div>
-                  <h1>Completed Todo</h1>
-                  {response.map((item) => {
-                    if (item.isCompleted) {
-                      return (
-                        <ul key={item.id}>
-                          <ToDo
-                            handleCheck={handleCheck}
-                            deleteToDo={deleteToDo}
-                            item={item}
-                          />
-                        </ul>
-                      );
-                    }
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div>
-            <h2>Error....</h2>
-          </div>
-        )}
-      </div>
-    </>
+    </div>
   );
 };
 

@@ -1,22 +1,22 @@
-import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import ToDoList from "./Components/ToDoList";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AddToDo from "./Components/AddToDo";
-import ToDo from "./Components/ToDo";
+import NavBar from "./Components/NavBar";
+import ToDoItem from "./Components/ToDoItem";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/home" element={<ToDoList />}></Route>
-        <Route
-          path="/create"
-          element={<AddToDo/>}
-        ></Route>
-      </Routes>
-    </BrowserRouter>
+    <>
+      <NavBar />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<ToDoList />}></Route>
+          <Route path="/create" element={<AddToDo />}></Route>
+          <Route path="/showToDo/:id" element={<ToDoItem />}></Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 

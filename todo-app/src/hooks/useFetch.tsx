@@ -1,26 +1,25 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import IToDo from "../interfaces/Todo";
+import { getRequest } from "../services/axiosWrapper";
 
-const useFetch = (url: string) => {
+const useFetch = () => {
   const [response, setResponse] = useState<IToDo[]>([]);
   const [error, setError] = useState("");
   const [loader, setLoader] = useState(true);
   const [shouldRefetch, refetch] = useState({});
 
-  const fetchData = async () => {
-    await axios
-      .get(url)
+  const fetchData = useCallback(async () => {
+    getRequest()
       .then((data) => {
         setResponse(data.data);
         setLoader(false);
       })
       .catch((error) => setError(error));
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, [url, shouldRefetch]);
+  }, [fetchData, shouldRefetch]);
 
   return { response: response, error: error, loader: loader, refetch: refetch };
 };
