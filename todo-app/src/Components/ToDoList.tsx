@@ -31,60 +31,52 @@ const ToDoList = () => {
     }
   };
 
+  if (error) {
+    return <h1>{error}</h1>;
+  }
+  if (loader) {
+    return <h1>loader...</h1>;
+  }
   return (
-    <>
+    <div>
       <div>
         <button onClick={() => navigate("/create")}>Add</button>
       </div>
       <div>
-        {!error ? (
-          <div>
-            {loader ? (
-              <h3>loading....</h3>
-            ) : (
-              <div>
-                <div>
-                  <h1>Not Completed Todo</h1>
-                  {response.map((item) => {
-                    if (!item.isCompleted) {
-                      return (
-                        <ul key={item.id}>
-                          <ToDo
-                            handleCheck={handleCheck}
-                            deleteToDo={deleteToDo}
-                            item={item}
-                          />
-                        </ul>
-                      );
-                    }
-                  })}
-                </div>
-                <div>
-                  <h1>Completed Todo</h1>
-                  {response.map((item) => {
-                    if (item.isCompleted) {
-                      return (
-                        <ul key={item.id}>
-                          <ToDo
-                            handleCheck={handleCheck}
-                            deleteToDo={deleteToDo}
-                            item={item}
-                          />
-                        </ul>
-                      );
-                    }
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div>
-            <h2>Error....</h2>
-          </div>
-        )}
+        <div>
+          <h1>Not Completed Todo</h1>
+          {response.map((item) => {
+            if (!item.isCompleted) {
+              return (
+                <ul key={item.id}>
+                  <ToDo
+                    handleCheck={handleCheck}
+                    deleteToDo={deleteToDo}
+                    item={item}
+                  />
+                </ul>
+              );
+            }
+          })}
+        </div>
+        <div>
+          <h1>Completed Todo</h1>
+          {response.map((item) => {
+            if (item.isCompleted) {
+              return (
+                <ul key={item.id}>
+                  <ToDo
+                    handleCheck={handleCheck}
+                    deleteToDo={deleteToDo}
+                    item={item}
+                  />
+                </ul>
+              );
+            }
+          })}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

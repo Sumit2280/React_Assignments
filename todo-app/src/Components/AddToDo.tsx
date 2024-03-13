@@ -21,24 +21,21 @@ const AddToDo = () => {
         .then((data) => {
           console.log(data.data);
           setToDo("");
+          navigate("/home");
         })
-        .catch((err) => console.log(err));
-      navigate("/home");
+        .catch((err) => alert(err));
     } else {
       alert("Please Enter something to add");
     }
   };
   return (
-    <>
-      <div>
-        <input type="text" value={todo} onChange={handleInput} />
-        <button type="button" onClick={saveInput}>
-          Add
-        </button>
-      </div>
-    </>
+    <div>
+      <input type="text" value={todo} onChange={handleInput} />
+      <button type="button" onClick={saveInput}>
+        Add
+      </button>
+    </div>
   );
 };
 
 export default AddToDo;
-export const addInput = () => {};
