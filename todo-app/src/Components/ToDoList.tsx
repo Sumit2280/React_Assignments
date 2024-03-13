@@ -9,7 +9,7 @@ const ToDoList = () => {
   const { response, error, loader, refetch } = useFetch();
   const [searchKey, setSearchKey] = useState("");
   const [visibletodos, setVisibletodos] = useState<IToDo[]>([]);
-  const [sortKey, setSortKey] = useState("");
+  const [sortKey, setSortKey] = useState("none");
 
   const searchHandle = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchKey(event.target.value);
