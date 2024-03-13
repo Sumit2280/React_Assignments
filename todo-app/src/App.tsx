@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AddToDo from "./Components/AddToDo";
 import NavBar from "./Components/NavBar";
 import ToDoItem from "./Components/ToDoItem";
-
 function App() {
   return (
     <>

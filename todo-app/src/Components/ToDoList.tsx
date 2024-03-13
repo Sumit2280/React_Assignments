@@ -4,12 +4,15 @@ import { Col, Container, Form, Row } from "react-bootstrap";
 import { ChangeEvent, useMemo, useState } from "react";
 import { deleteRequest, updateRequest } from "../services/axiosWrapper";
 import IToDo from "../interfaces/Todo";
+import { queryClient } from "..";
 
 const ToDoList = () => {
-  const { response, error, loader, refetch } = useFetch();
   const [searchKey, setSearchKey] = useState("");
   const [visibletodos, setVisibletodos] = useState<IToDo[]>([]);
-  const [sortKey, setSortKey] = useState("none");
+  const [sortKey, setSortKey] = useState("");
+  const [filterKey, setFilterKey] = useState("");
+  const [page, setPage] = useState(1);
+  const { response, error, loader } = useFetch(page, sortKey, filterKey);
 
   const searchHandle = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchKey(event.target.value);
@@ -19,39 +22,47 @@ const ToDoList = () => {
     setSortKey(event.target.value);
   };
 
-  useMemo(() => {
-    setVisibletodos(response.filter((item) => item.text.includes(searchKey)));
-  }, [response, searchKey]);
+  const filterHandle = (event: ChangeEvent<HTMLSelectElement>) => {
+    setFilterKey(event.target.value);
+  };
+
+  const nextPage = () => {
+    if (page > Math.floor(response.length / 2)) {
+      alert("this is the last page");
+    } else {
+      setPage(page + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (page === 1) {
+      alert("this is the first page");
+    } else {
+      setPage(page - 1);
+    }
+  };
 
   useMemo(() => {
-    if (sortKey !== "none") {
-      setVisibletodos(
-        response.sort((a, b) => {
-          if (sortKey === "text") {
-            return a.text > b.text ? 1 : -1;
-          } else {
-            return a.dueDate > b.dueDate ? 1 : -1;
-          }
-        })
-      );
-    } else {
-      refetch({});
-    }
-  }, [response, sortKey, refetch]);
+    setVisibletodos(
+      response.filter((item: IToDo) => item.text.includes(searchKey))
+    );
+  }, [response, searchKey]);
 
   const deleteToDo = async (key: number) => {
     deleteRequest(key)
-      .then((data) => console.log(data.data))
+      .then((data) => {
+        console.log(data.data);
+        queryClient.refetchQueries({ queryKey: "todos" });
+      })
       .catch((err) => console.log(err));
-    refetch({});
   };
 
   const handleCheck = (key: number) => {
-    const currentTodo = response.find((item) => item.id === key);
+    const currentTodo = response.find((item: IToDo) => item.id === key);
     if (currentTodo) {
       currentTodo.isCompleted = !currentTodo?.isCompleted;
       updateRequest(key, currentTodo)
-        .then(() => refetch({}))
+        .then(() => queryClient.refetchQueries({ queryKey: "todos" }))
         .catch((err) => alert(err));
       console.log(currentTodo);
     } else {
@@ -82,47 +93,55 @@ const ToDoList = () => {
           </Col>
         </Row>
       </Container>
+      <h4>sort</h4>
       <select onChange={sortHandle}>
-        <option value="none">none</option>
+        <option value="">none</option>
         <option value="text">Text</option>
         <option value="date">Date</option>
       </select>
+      <h4>filter</h4>
+      <select onChange={filterHandle}>
+        <option value="">all</option>
+        <option value="true">Completed</option>
+        <option value="false  ">Not Completed</option>
+      </select>
       <div className="d-flex justify-content-center align-items-center">
         <div>
-          <h1 className="text-danger">Not Completed Todo</h1>
-          <h5>Task Due Date</h5>
+          <h1 className="text-danger">Todo List</h1>
           {visibletodos.map((item) => {
-            if (!item.isCompleted) {
-              return (
-                <ul key={item.id}>
-                  <ToDo
-                    handleCheck={handleCheck}
-                    deleteToDo={deleteToDo}
-                    item={item}
-                  />
-                </ul>
-              );
-            }
-          })}
-        </div>
-        <div>
-          <h1>Completed Todo</h1>
-          <h5>Task Due Date</h5>
-          {visibletodos.map((item) => {
-            if (item.isCompleted) {
-              return (
-                <ul key={item.id}>
-                  <ToDo
-                    handleCheck={handleCheck}
-                    deleteToDo={deleteToDo}
-                    item={item}
-                  />
-                </ul>
-              );
-            }
+            return (
+              <ul key={item.id}>
+                <ToDo
+                  handleCheck={handleCheck}
+                  deleteToDo={deleteToDo}
+                  item={item}
+                />
+              </ul>
+            );
           })}
         </div>
       </div>
+      <nav aria-label="Page navigation example">
+        <ul className="pagination">
+          <li className="page-item">
+            <a className="page-link" aria-label="Previous" onClick={prevPage}>
+              <span aria-hidden="true">&laquo;</span>
+              <span className="sr-only">Previous</span>
+            </a>
+          </li>
+          <li className="page-item">
+            <a className="page-link" href="#">
+              {page}
+            </a>
+          </li>
+          <li className="page-item">
+            <a className="page-link" aria-label="Next" onClick={nextPage}>
+              <span aria-hidden="true">&raquo;</span>
+              <span className="sr-only">Next</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };

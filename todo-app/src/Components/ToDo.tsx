@@ -22,8 +22,7 @@ const ToDo = (props: IProps) => {
         defaultChecked={item.isCompleted}
       />
       <h4 onClick={() => showToDo(item.id)}>{item.text}</h4>
-      <> </>
-      {item.dueDate}
+      <h5>Due Date: {item.dueDate}</h5>
       <button
         type="button"
         className="btn btn-warning"
