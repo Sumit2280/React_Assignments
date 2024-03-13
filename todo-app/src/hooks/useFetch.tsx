@@ -1,27 +1,27 @@
-import { useCallback, useEffect, useState } from "react";
 import IToDo from "../interfaces/Todo";
-import { getRequest } from "../services/axiosWrapper";
+import { queryRequest } from "../services/axiosWrapper";
+import { useQuery } from "react-query";
 
-const useFetch = () => {
-  const [response, setResponse] = useState<IToDo[]>([]);
-  const [error, setError] = useState("");
-  const [loader, setLoader] = useState(true);
-  const [shouldRefetch, refetch] = useState({});
+const useFetch = (page: number, sortKey: string, filterKey: string) => {
+  const gettodo = async () => {
+    let res;
+    if (filterKey) {
+      res = await queryRequest(
+        `?_limit=2&_page=${page}&_sort=${sortKey}&isCompleted=${filterKey}`
+      );
+    } else {
+      res = await queryRequest(`?_limit=2&_page=${page}&_sort=${sortKey}`);
+    }
+    return res.data;
+  };
+  const initialData: IToDo[] = [];
+  const { data, error, isLoading } = useQuery({
+    initialData: initialData,
+    queryKey: ["todos", page, filterKey, sortKey],
+    queryFn: gettodo,
+  });
 
-  const fetchData = useCallback(async () => {
-    getRequest()
-      .then((data) => {
-        setResponse(data.data);
-        setLoader(false);
-      })
-      .catch((error) => setError(error));
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData, shouldRefetch]);
-
-  return { response: response, error: error, loader: loader, refetch: refetch };
+  return { response: data, error: error, loader: isLoading };
 };
 
 export default useFetch;
