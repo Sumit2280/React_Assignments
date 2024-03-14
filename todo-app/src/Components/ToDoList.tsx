@@ -44,7 +44,7 @@ const ToDoList = () => {
 
   useMemo(() => {
     setVisibletodos(
-      response.filter((item: IToDo) => item.text.includes(searchKey))
+      response.filter((item: IToDo) => item.title.includes(searchKey))
     );
   }, [response, searchKey]);
 
@@ -96,8 +96,8 @@ const ToDoList = () => {
       <h4>sort</h4>
       <select onChange={sortHandle}>
         <option value="">none</option>
-        <option value="text">Text</option>
-        <option value="date">Date</option>
+        <option value="title">Text</option>
+        <option value="dueDate">Date</option>
       </select>
       <h4>filter</h4>
       <select onChange={filterHandle}>
@@ -130,7 +130,7 @@ const ToDoList = () => {
             </a>
           </li>
           <li className="page-item">
-            <a className="page-link" href="#">
+            <a className="page-link">
               {page}
             </a>
           </li>
