@@ -1,52 +1,97 @@
 import ToDo from "./ToDo";
 import useFetch from "../hooks/useFetch";
 import { Col, Container, Form, Row } from "react-bootstrap";
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useReducer } from "react";
 import { deleteRequest, updateRequest } from "../services/axiosWrapper";
 import IToDo from "../interfaces/Todo";
 import { queryClient } from "..";
 
+const initialState = {
+  searchKey: "",
+  sortKey: "",
+  filterKey: "",
+  page: 1,
+};
+
+const reducer = (state: any, action: any): any => {
+  switch (action.type) {
+    case "setSearchKey": {
+      return {
+        ...state,
+        searchKey: action.event,
+      };
+    }
+    case "setSortKey": {
+      console.log("in sort");
+      return {
+        ...state,
+        sortKey: action.event,
+      };
+    }
+    case "setFilterKey": {
+      return {
+        ...state,
+        filterKey: action.event,
+      };
+    }
+    case "nextPage": {
+      if (Math.floor(action.length / 2) < 1) {
+        alert("this is the last page");
+        return {
+          ...state,
+        };
+      } else {
+        return {
+          ...state,
+          page: state.page + 1,
+        };
+      }
+    }
+    case "prevPage": {
+        return {
+          ...state,
+          page: state.page - 1,
+        };
+    }
+    default: {
+      return state;
+    }
+  }
+};
+
 const ToDoList = () => {
-  const [searchKey, setSearchKey] = useState("");
-  const [visibletodos, setVisibletodos] = useState<IToDo[]>([]);
-  const [sortKey, setSortKey] = useState("");
-  const [filterKey, setFilterKey] = useState("");
-  const [page, setPage] = useState(1);
-  const { response, error, loader } = useFetch(page, sortKey, filterKey);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { response, error, loader } = useFetch(
+    state.page,
+    state.sortKey,
+    state.filterKey
+  );
 
-  const searchHandle = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearchKey(event.target.value);
+  const searchHandle = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: "setSearchKey", event: e.target.value });
   };
 
-  const sortHandle = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSortKey(event.target.value);
+  const sortHandle = (e: ChangeEvent<HTMLSelectElement>) => {
+    dispatch({ type: "setSortKey", event: e.target.value });
   };
 
-  const filterHandle = (event: ChangeEvent<HTMLSelectElement>) => {
-    setFilterKey(event.target.value);
+  const filterHandle = (e: ChangeEvent<HTMLSelectElement>) => {
+    dispatch({ type: "setFilterKey", event: e.target.value });
   };
 
   const nextPage = () => {
-    if (page > Math.floor(response.length / 2)) {
-      alert("this is the last page");
-    } else {
-      setPage(page + 1);
-    }
+    dispatch({ type: "nextPage", length: response.length });
   };
 
   const prevPage = () => {
-    if (page === 1) {
-      alert("this is the first page");
-    } else {
-      setPage(page - 1);
-    }
+    dispatch({ type: "prevPage" });
   };
 
-  useMemo(() => {
-    setVisibletodos(
-      response.filter((item: IToDo) => item.title.includes(searchKey))
+  const visibletodos: IToDo[] = useMemo(() => {
+    return response.filter((item: IToDo) =>
+      item.title.includes(state.searchKey)
     );
-  }, [response, searchKey]);
+  }, [response, state.searchKey]);
 
   const deleteToDo = async (key: number) => {
     deleteRequest(key)
@@ -121,27 +166,36 @@ const ToDoList = () => {
           })}
         </div>
       </div>
-      <nav aria-label="Page navigation example">
-        <ul className="pagination">
-          <li className="page-item">
-            <a className="page-link" aria-label="Previous" onClick={prevPage}>
-              <span aria-hidden="true">&laquo;</span>
-              <span className="sr-only">Previous</span>
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link">
-              {page}
-            </a>
-          </li>
-          <li className="page-item">
-            <a className="page-link" aria-label="Next" onClick={nextPage}>
-              <span aria-hidden="true">&raquo;</span>
-              <span className="sr-only">Next</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <div>
+        <nav aria-label="Page navigation example">
+          <ul className="pagination">
+            <li className="page-item">
+              <button
+                className="page-link"
+                aria-label="Previous"
+                onClick={prevPage}
+                disabled={state.page === 1}
+              >
+                <span aria-hidden="true">&laquo;</span>
+                <span className="sr-only">Previous</span>
+              </button>
+            </li>
+            <li className="page-item">
+              <span className="page-link">{state.page}</span>
+            </li>
+            <li className="page-item">
+              <button
+                className="page-link"
+                aria-label="Next"
+                onClick={nextPage}
+              >
+                <span aria-hidden="true">&raquo;</span>
+                <span className="sr-only">Next</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   );
 };
