@@ -15,8 +15,10 @@ const ToDoItem = () => {
   }, [id]);
   return (
     <div>
-      <h5>{data?.text}</h5>
-      <h5>{data?.dueDate}</h5>
+      <h2>{data?.title}</h2>
+      <h5>Due Date: {data?.dueDate}</h5>
+      <h5>Assignee: {data?.assignee}</h5>
+      <h5>Description: {data?.description}</h5>
     </div>
   );
 };

@@ -21,7 +21,7 @@ const ToDo = (props: IProps) => {
         onChange={() => handleCheck(item.id)}
         defaultChecked={item.isCompleted}
       />
-      <h4 onClick={() => showToDo(item.id)}>{item.text}</h4>
+      <h4 onClick={() => showToDo(item.id)}>{item.title}</h4>
       <h5>Due Date: {item.dueDate}</h5>
       <button
         type="button"
